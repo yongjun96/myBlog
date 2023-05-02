@@ -5,8 +5,11 @@ public class PostCreate {
     public String title;
     public String content;
 
-    /*@Override
+    @Override
     public String toString() {
-
-    }*/
+        return "PostCreate{" +
+            "title='" + title + '\'' +
+            ", content='" + content + '\'' +
+            '}';
+    }
 }

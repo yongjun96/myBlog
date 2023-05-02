@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PostController {
 
+
     /**
      알아볼 것
      @Slf4j
@@ -35,29 +36,31 @@ public class PostController {
      Http Method
      GET, POST, PATCH, DELETE, OPTIONS, HEAD, TRACE, CONNECT
      // 글등록 -> POST Method
-
      */
 
+
+
+
     /** 방식 1 */
-    /*@PostMapping("/posts")
-    public String post(@RequestParam String title, @RequestParam String content) {
+    @PostMapping("/posts1")
+    public String post1(@RequestParam String title, @RequestParam String content) {
         log.info("title={}, content={}", title, content);
         return "Hello World";
-    }*/
+    }
+
 
     /** 방식 2 */
-    /*@PostMapping("/posts")
-    public String post(@RequestParam Map<String, String> params) {
+    @PostMapping("/posts2")
+    public String post2(@RequestParam Map<String, String> params) {
         log.info("params={}", params);
         String title = params.get("title");
         String content = params.get("content");
         log.info("title= {}, content = {}", title, content);
         return "Hello World";
-    }*/
+    }
 
-    /**
-     * 방식 3
-     */
+
+    /** 방식 3 */
     @PostMapping("/posts")
     public String post(@ModelAttribute PostCreate params) {
         log.info("params = {}", params.toString());
