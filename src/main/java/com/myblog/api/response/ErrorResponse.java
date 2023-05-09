@@ -1,5 +1,7 @@
 package com.myblog.api.response;
 
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -23,5 +25,12 @@ public class ErrorResponse {
     //케바케임
     private final String code;
     private final String message;
+
+    private final Map<String, String> validation = new HashMap<>();
+
+    public void addValidation(String fieldName, String errorMessage){
+
+        this.validation.put(fieldName, errorMessage);
+    }
 
 }

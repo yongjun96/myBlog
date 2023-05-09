@@ -1,10 +1,12 @@
 package com.myblog.api.controller;
 
 import com.myblog.api.request.PostCreate;
+import com.myblog.api.service.PostService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -19,7 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 // @RestController -> @Controller + @ResponseBody
 @RestController
+@RequiredArgsConstructor
 public class PostController {
+
+    private final PostService postService;
 
 
     /**
@@ -131,7 +136,12 @@ public class PostController {
 
     /** 방식 5 */
     @PostMapping("/posts")
-    public Map<String, String> post(@RequestBody @Valid PostCreate params) throws Exception {
+    public Map<String, String> post(@RequestBody @Valid PostCreate request) throws Exception {
+
+        // repository.save(params);
+        // db.save(params);
+
+        postService.write(request);
 
         return Map.of();
     }
