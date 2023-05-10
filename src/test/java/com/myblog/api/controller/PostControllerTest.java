@@ -1,8 +1,11 @@
 package com.myblog.api.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.myblog.api.domain.Post;
 import com.myblog.api.repository.PostRepository;
+import com.myblog.api.request.PostCreate;
+import java.util.Objects;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +26,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 class PostControllerTest {
 
     @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
@@ -34,6 +40,7 @@ class PostControllerTest {
     void clean(){
         postRepository.deleteAll();
     }
+
 
     @Test
     @DisplayName("/posts 요청시 Hello World를 출력한다.")
@@ -73,10 +80,18 @@ class PostControllerTest {
 
         // MockMvcResultHandlers.print() -> http요청에 대한 서머리를 남겨줌
 
+        //given
+        PostCreate request =  PostCreate.builder()
+            .title("제목입니다.")
+            .content("내용입니다.")
+            .build();
+
+        // 오브젝트매퍼는 실무에서 굉장히 많이 쓰임.
+        String json = objectMapper.writeValueAsString(request);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"title\": \"제목입니다.\", \"content\" : \"내용입니다.\"}")
+                .content(json)
             )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().string("{}"))
@@ -90,9 +105,18 @@ class PostControllerTest {
     @DisplayName("/posts 요청시 tilte값은 필수")
     void test2() throws Exception {
 
+        //given
+        PostCreate request =  PostCreate.builder()
+            .title(null)
+            .content("내용입니다.")
+            .build();
+
+        // 오브젝트매퍼는 실무에서 굉장히 많이 쓰임.
+        String json = objectMapper.writeValueAsString(request);
+
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"title\": null, \"content\" : \"내용입니다.\"}")
+                .content(json)
             )
             .andExpect(MockMvcResultMatchers.status().isBadRequest())
             // junit5 jsonPath 찾아보기
@@ -106,9 +130,18 @@ class PostControllerTest {
     @DisplayName("/posts 요청시 tilte값은 필수")
     void test3() throws Exception {
 
+        //given
+        PostCreate request =  PostCreate.builder()
+            .title(null)
+            .content(null)
+            .build();
+
+        // 오브젝트매퍼는 실무에서 굉장히 많이 쓰임.
+        String json = objectMapper.writeValueAsString(request);
+
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"title\": null, \"content\" : null}")
+                .content(json)
             )
             .andExpect(MockMvcResultMatchers.status().isBadRequest())
             .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("400"))
@@ -123,10 +156,20 @@ class PostControllerTest {
     @Test
     @DisplayName("/posts 요청시 DB에 값이 저장된다.")
     void test4() throws Exception {
+
+        //given
+        PostCreate request =  PostCreate.builder()
+            .title("제목입니다.")
+            .content("내용입니다.")
+            .build();
+
+        // 오브젝트매퍼는 실무에서 굉장히 많이 쓰임.
+        String json = objectMapper.writeValueAsString(request);
+
         // when
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"title\": \"제목입니다.\", \"content\" : \"내용입니다.\"}")
+                .content(json)
             )
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andDo(MockMvcResultHandlers.print());
@@ -142,5 +185,40 @@ class PostControllerTest {
         Assertions.assertEquals("내용입니다.", post.getContent());
 
     }
+
+
+
+    @Test
+    @DisplayName("/posts 요청시 DB에 값이 저장된다.")
+    void test5() throws Exception {
+
+        //given
+        PostCreate request =  PostCreate.builder()
+            .title("제목입니다.")
+            .content("내용입니다.")
+            .build();
+
+        // 오브젝트매퍼는 실무에서 굉장히 많이 쓰임.
+        String json = objectMapper.writeValueAsString(request);
+
+        System.out.println("json 확인 : "+json);
+
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+            )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andDo(MockMvcResultHandlers.print());
+
+
+        Assertions.assertEquals(1L, postRepository.count());
+
+        Post post = postRepository.findAll().get(0);
+        Assertions.assertEquals("제목입니다.", post.getTitle());
+        Assertions.assertEquals("내용입니다.", post.getContent());
+
+    }
+
 
 }
